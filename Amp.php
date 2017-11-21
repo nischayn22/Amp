@@ -7,11 +7,11 @@ class Amp {
 	}
 
 	public static function addAmpLink( $input, array $args, Parser $parser, PPFrame $frame ) {
-		global $wgOut, $wgServer;
+		global $wgOut, $wgScriptPath;
 		$wgOut->addLink(
 			array(
 				"rel" => "amphtml",
-				"href" => $wgServer . "/extensions/Amp/ampfiles/" . $parser->getTitle()->getFullText() . ".html",
+				"href" => $wgScriptPath . "/extensions/Amp/ampfiles/" . str_replace(" ", "_", $parser->getTitle()->getFullText()) . ".html",
 			)
 		);
 		return htmlspecialchars( $input );
@@ -44,24 +44,24 @@ class Amp {
 		$home_links = $finder->query("//*[contains(@class, 'home_link')]");
 		foreach($home_links as $home_link) {
 			$home_link->setAttribute("href", $wgServer);
-			$home_link->textContent = $wgSitename;
+			$home_link->nodeValue = $wgSitename;
 		}
 
 		// Set Tagline
 		$site_taglines = $finder->query("//*[contains(@class, 'site_tagline')]");
 		foreach($site_taglines as $site_tagline) {
-			$site_tagline->textContent = $wgSiteTagline;
+			$site_tagline->nodeValue = $wgSiteTagline;
 		}
 
 		// Setting Styles
-		$dom->getElementsByTagName('style')->item(0)->textContent = file_get_contents(__DIR__ . '/style.css');
-		$dom->getElementsByTagName('style')->item(0)->textContent .= ".top-bar .name h1 a{background-image:url(" . $wgLogo . ");background-repeat:no-repeat;height:59px;width:260px;font-size:0px;}";
+		$dom->getElementsByTagName('style')->item(0)->nodeValue = file_get_contents(__DIR__ . '/style.css');
+		$dom->getElementsByTagName('style')->item(0)->nodeValue .= ".top-bar .name h1 a{background-image:url(" . $wgLogo . ");background-repeat:no-repeat;height:59px;width:260px;font-size:0px;}";
 		
 		// Set Canonical Link
 		$dom->getElementsByTagName('link')->item(0)->setAttribute("href", $output->getTitle()->getFullURL());
 
 		// Set Title
-		$dom->getElementsByTagName('title')->item(0)->textContent = $output->getHTMLTitle();
+		$dom->getElementsByTagName('title')->item(0)->nodeValue = $output->getHTMLTitle();
 
 		// Set Footer Links
 		$footer_leftgrid = $dom->getElementById('footer_leftgrid');
@@ -71,10 +71,10 @@ class Amp {
 				$link = $dom->createElement('a');
 				$link->setAttribute('href', $footer_link['href']);
 				$link->setAttribute('title', $footer_link['title']);
-				$link->textContent = $footer_link['content'];
+				$link->nodeValue = $footer_link['content'];
 			} else {
 				$link = $dom->createElement('b');
-				$link->textContent = $footer_link['content'];
+				$link->nodeValue = $footer_link['content'];
 			}
 			$link_li = $dom->createElement('li');
 			$link_li->appendChild($link);
@@ -88,10 +88,10 @@ class Amp {
 				$link = $dom->createElement('a');
 				$link->setAttribute('href', $footer_link['href']);
 				$link->setAttribute('title', $footer_link['title']);
-				$link->textContent = $footer_link['content'];
+				$link->nodeValue = $footer_link['content'];
 			} else {
 				$link = $dom->createElement('b');
-				$link->textContent = $footer_link['content'];
+				$link->nodeValue = $footer_link['content'];
 			}
 			$link_li = $dom->createElement('li');
 			$link_li->appendChild($link);
@@ -145,7 +145,6 @@ class Amp {
 				}
 			}
 		}
-//		dieq($nodes_to_be_deleted);
 		foreach($nodes_to_be_deleted as $node) {
 			$node->parentNode->removeChild($node);
 		}
@@ -160,16 +159,16 @@ class Amp {
 		}
 
 		if (!is_dir( __DIR__ . '/ampfiles')) {
-		  mkdir(__DIR__ . '/ampfiles');
+			mkdir( __DIR__ . '/ampfiles');
 		}
-		file_force_contents( 'ampfiles/' . $output->getTitle()->getFullText() . ".html", $dom->saveHTML());
+		file_force_contents(str_replace(" ", "_", $output->getTitle()->getFullText() . ".html"), $dom->saveHTML());
 	}
 }
 
 function file_force_contents($dir, $contents){
 	$parts = explode('/', $dir);
 	$file = array_pop($parts);
-	$dir = __DIR__ ;
+	$dir = __DIR__ . '/ampfiles';
 	foreach($parts as $part)
 		if(!is_dir($dir .= "/$part")) {
 			mkdir($dir);
