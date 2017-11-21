@@ -1,0 +1,23 @@
+{
+	"name": "Amp",
+	"version": "0.0.0",
+	"author": [
+		"Nischayn22"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:Amp",
+	"license-name": "MIT",
+	"type": "other",
+	"AutoloadClasses": {
+		"Amp": "Amp.php",
+		"RecursiveDOMIterator": "RecursiveDOMIterator.php"
+	},
+	"Hooks": {
+		"ParserFirstCallInit": [
+			"Amp::onParserSetup"
+		],
+		"AfterFinalPageOutput": [
+			"Amp::generateAmpHtml"
+		]
+	},
+	"manifest_version": 1
+}
