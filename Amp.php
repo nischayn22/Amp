@@ -19,10 +19,6 @@ class Amp {
 
 	public static function generateAmpHtml( $output )
 	{
-		if (wfTimestampNow() - wfTimestamp( TS_MW, $output->getRevisionTimestamp()) > 60) {
-			return true;
-		}
-
 		$isAmpPage = false;
 		foreach($output->getLinkTags() as $linkTag) {
 			if ($linkTag['rel'] == "amphtml") {
@@ -31,6 +27,14 @@ class Amp {
 		}
 		if (!$isAmpPage) {
 			return true;
+		}
+
+		$filepath = str_replace(" ", "_", $output->getTitle()->getFullText() . ".html");
+
+		if (file_exists(__DIR__ . '/ampfiles/' . $filepath)) {
+			if (wfTimestampNow() - wfTimestamp( TS_MW, $output->getRevisionTimestamp()) > 60) {
+				return true;
+			}
 		}
 
 		global $wgServer, $wgSitename, $wgLogo, $wgGoogleAnalyticsAccount, $wgSiteTagline, $ampFooterLinks;
@@ -120,7 +124,7 @@ class Amp {
 					!in_array(
 						$node->nodeName,
 						array(
-							"meta", "div", "img", "form", "footer", "button", "p", "b", "i", "span", "a", "ul", "li", "h1", "h2", "h3", "h4", "h5", "nav", "br", "table", "th", "th", "tr", "td"
+							"meta", "div", "img", "form", "footer", "button", "p", "b", "i", "span", "a", "ul", "li", "h1", "h2", "h3", "h4", "h5", "nav", "br", "table", "th", "th", "tr", "td", "script"
 						)
 					)
 				) {
@@ -142,6 +146,9 @@ class Amp {
 						$amp_img->setAttribute('layout', 'responsive');
 						$node->parentNode->replaceChild($amp_img, $node);
 					}
+					if ($node->nodeName == 'script' && $node->getAttribute('type') != "application/ld+json") {
+						$nodes_to_be_deleted[] = $node;
+					}
 				}
 			}
 		}
@@ -161,7 +168,7 @@ class Amp {
 		if (!is_dir( __DIR__ . '/ampfiles')) {
 			mkdir( __DIR__ . '/ampfiles');
 		}
-		file_force_contents(str_replace(" ", "_", $output->getTitle()->getFullText() . ".html"), $dom->saveHTML());
+		file_force_contents($filepath, $dom->saveHTML());
 	}
 }
 
