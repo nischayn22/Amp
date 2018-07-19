@@ -8,6 +8,9 @@ class Amp {
 
 	public static function addAmpLink( $input, array $args, Parser $parser, PPFrame $frame ) {
 		global $wgOut, $wgScriptPath;
+
+		$parser->getOutput()->addHeadItem( '<link rel="amphtml" href="' . $wgScriptPath . '/extensions/Amp/ampfiles/' . str_replace(" ", "_", $parser->getTitle()->getFullText()) . '.html">');
+
 		$wgOut->addLink(
 			array(
 				"rel" => "amphtml",
@@ -30,12 +33,6 @@ class Amp {
 		}
 
 		$filepath = str_replace(" ", "_", $output->getTitle()->getFullText() . ".html");
-
-		if (file_exists(__DIR__ . '/ampfiles/' . $filepath)) {
-			if (wfTimestampNow() - wfTimestamp( TS_MW, $output->getRevisionTimestamp()) > 60) {
-				return true;
-			}
-		}
 
 		global $wgServer, $wgSitename, $wgLogo, $wgGoogleAnalyticsAccount, $wgSiteTagline, $ampFooterLinks;
 
