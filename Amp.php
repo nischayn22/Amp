@@ -136,7 +136,15 @@ class Amp {
 						if ($node->getAttribute('data-original') != '') {
 							$src = $node->getAttribute('data-original');
 						}
+						if ( substr($src, 0, 2) == "//" ) {
+							$src = "http:" . $src;
+						}
 						list($width, $height, $type, $attr) = getimagesize($src);
+
+						if ( empty( $width ) || empty( $height ) ) {
+							return false;
+						}
+
 						$amp_img->setAttribute('src', $src);
 						$amp_img->setAttribute('width', $width);
 						$amp_img->setAttribute('height', $height);
