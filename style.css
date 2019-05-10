@@ -221,7 +221,16 @@ h1,h2,h3,h4,h5{font-family:inherit;font-weight:500;line-height:1.1;color:inherit
 .row{max-width:65.5em;}
 .top-bar #personal-tools-dropdown{margin-right:20px;}
 #personal-tools-dropdown{z-index:0;}
-.top-bar{background:rgba(94,0,78,0.86);margin-bottom:0px;}
+.top-bar.w-b {
+    background: white;
+    border-bottom: 1px solid #d6d6d6;
+    min-height: 60px;
+    margin-bottom: 0px;
+}
+.top-bar {
+    margin-top: 15px;
+    height: 54px;
+}
 .top-bar-section ul{background:none;color:white;}
 .top-bar-section .dropdown li{border:solid 1px #d8d8d8;border-top:none;color:#4d4d4d;}
 .top-bar-section .dropdown li:hover{border:solid 1px #e9e9e9;background:#e9e9e9;}

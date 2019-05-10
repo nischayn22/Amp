@@ -137,7 +137,7 @@ class Amp {
 							$src = $node->getAttribute('data-original');
 						}
 						if ( substr($src, 0, 2) == "//" ) {
-							$src = "http:" . $src;
+							$src = "https:" . $src;
 						}
 						list($width, $height, $type, $attr) = getimagesize($src);
 
