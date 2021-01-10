@@ -16,8 +16,18 @@
 			"Amp::onParserSetup"
 		],
 		"AfterFinalPageOutput": [
-			"Amp::generateAmpHtml"
+			"Amp::onAfterFinalPageOutput"
+		],
+		"PageContentSaveComplete": [
+			"Amp::onPageContentSaveComplete"
 		]
+	},
+	"config": {
+		"AllPagesAmp": false,
+		"AmpFooterLinks": {
+			"left": [],
+			"right": []
+		}
 	},
 	"manifest_version": 1
 }

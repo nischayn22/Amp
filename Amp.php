@@ -6,6 +6,20 @@ class Amp {
 		$parser->setHook( 'amp', 'Amp::addAmpLink' );
 	}
 
+	public static function onBeforePageDisplay( OutputPage $out, Skin $skin ) {
+		global $wgTitle, $wgScriptPath, $wgAllPagesAmp;
+
+		if ( $wgAllPagesAmp ) {
+			$out->addLink(
+				array(
+					"rel" => "amphtml",
+					"href" => $wgScriptPath . "/extensions/Amp/ampfiles/" . str_replace(" ", "_", $wgTitle->getFullText()) . ".html",
+				)
+			);
+			$out->addHeadItem( 'amp_link', '<link rel="amphtml" href="' . $wgScriptPath . '/extensions/Amp/ampfiles/' . str_replace(" ", "_", $wgTitle->getFullText()) . '.html">');
+		}
+	}
+
 	public static function addAmpLink( $input, array $args, Parser $parser, PPFrame $frame ) {
 		global $wgOut, $wgScriptPath;
 
@@ -20,21 +34,26 @@ class Amp {
 		return htmlspecialchars( $input );
 	}
 
-	public static function generateAmpHtml( $output )
-	{
+	public static function onAfterFinalPageOutput( $output ) {
+		global $wgAllPagesAmp;
 		$isAmpPage = false;
 		foreach($output->getLinkTags() as $linkTag) {
 			if ($linkTag['rel'] == "amphtml") {
 				$isAmpPage = true;
 			}
 		}
-		if (!$isAmpPage) {
+		if (!$isAmpPage && !$wgAllPagesAmp ) {
 			return true;
 		}
 
 		$filepath = str_replace(" ", "_", $output->getTitle()->getFullText() . ".html");
+		self::generateAmpHtml();
+	}
 
-		global $wgServer, $wgSitename, $wgLogo, $wgGoogleAnalyticsAccount, $wgSiteTagline, $ampFooterLinks;
+	public static function generateAmpHtml() {
+		global $wgOut, $wgServer, $wgSitename, $wgLogo, $wgGoogleAnalyticsAccount, $wgSiteTagline, $wgAmpFooterLinks;
+
+		$filepath = str_replace(" ", "_", $wgOut->getTitle()->getFullText() . ".html");
 
 		// Begin with a Template
 		$dom = new DOMDocument();
@@ -59,14 +78,14 @@ class Amp {
 		$dom->getElementsByTagName('style')->item(0)->nodeValue .= ".top-bar .name h1 a{background-image:url(" . $wgLogo . ");background-repeat:no-repeat;height:59px;width:260px;font-size:0px;}";
 		
 		// Set Canonical Link
-		$dom->getElementsByTagName('link')->item(0)->setAttribute("href", $output->getTitle()->getFullURL());
+		$dom->getElementsByTagName('link')->item(0)->setAttribute("href", $wgOut->getTitle()->getFullURL());
 
 		// Set Title
-		$dom->getElementsByTagName('title')->item(0)->nodeValue = $output->getHTMLTitle();
+		$dom->getElementsByTagName('title')->item(0)->nodeValue = $wgOut->getHTMLTitle();
 
 		// Set Footer Links
 		$footer_leftgrid = $dom->getElementById('footer_leftgrid');
-		foreach($ampFooterLinks['left'] as $footer_link) {
+		foreach($wgAmpFooterLinks['left'] as $footer_link) {
 			$link = '';
 			if (array_key_exists('href', $footer_link)) {
 				$link = $dom->createElement('a');
@@ -83,7 +102,7 @@ class Amp {
 		}
 
 		$footer_rightgrid = $dom->getElementById('footer_rightgrid');
-		foreach($ampFooterLinks['right'] as $footer_link) {
+		foreach($wgAmpFooterLinks['right'] as $footer_link) {
 			$link = '';
 			if (array_key_exists('href', $footer_link)) {
 				$link = $dom->createElement('a');
@@ -102,7 +121,7 @@ class Amp {
 
 		// Set Text from this page
 		$new_body = new DOMDocument();
-		$new_body->loadHtml($output->getHTML());
+		$new_body->loadHtml($wgOut->getHTML());
 		$new_body = $new_body->getElementsByTagName('body')->item(0);
 		$mw_content_text = $dom->getElementById('mw-content-text');
 		foreach($new_body->childNodes as $childNode) {
@@ -121,7 +140,7 @@ class Amp {
 					!in_array(
 						$node->nodeName,
 						array(
-							"meta", "div", "img", "form", "footer", "button", "p", "b", "i", "span", "a", "ul", "li", "h1", "h2", "h3", "h4", "h5", "nav", "br", "table", "th", "th", "tr", "td", "script"
+							"meta", "div", "img", "form", "footer", "button", "p", "b", "i", "span", "a", "ul", "ol", "li", "h1", "h2", "h3", "h4", "h5", "nav", "br", "table", "th", "th", "tr", "td", "script"
 						)
 					)
 				) {
