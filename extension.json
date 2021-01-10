@@ -15,11 +15,11 @@
 		"ParserFirstCallInit": [
 			"Amp::onParserSetup"
 		],
+		"BeforePageDisplay": [
+			"Amp::onBeforePageDisplay"
+		],
 		"AfterFinalPageOutput": [
 			"Amp::onAfterFinalPageOutput"
-		],
-		"PageContentSaveComplete": [
-			"Amp::onPageContentSaveComplete"
 		]
 	},
 	"config": {

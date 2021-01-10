@@ -157,6 +157,8 @@ class Amp {
 						}
 						if ( substr($src, 0, 2) == "//" ) {
 							$src = "https:" . $src;
+						} else if ( substr( $src, 0, 1 ) == "/" ) {
+							$src = $wgServer . $src;
 						}
 						list($width, $height, $type, $attr) = getimagesize($src);
 
