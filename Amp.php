@@ -140,7 +140,7 @@ class Amp {
 					!in_array(
 						$node->nodeName,
 						array(
-							"meta", "div", "img", "form", "footer", "button", "p", "b", "i", "span", "a", "ul", "ol", "li", "h1", "h2", "h3", "h4", "h5", "nav", "br", "table", "th", "th", "tr", "td", "script"
+							"meta", "div", "img", "form", "footer", "button", "p", "b", "i", "span", "a", "ul", "ol", "li", "h1", "h2", "h3", "h4", "h5", "nav", "br", "table", "th", "th", "tr", "td", "script", "blockquote"
 						)
 					)
 				) {
