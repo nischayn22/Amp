@@ -10,7 +10,7 @@ class Amp {
 		global $wgTitle, $wgScriptPath, $wgAllPagesAmp;
 
 		if ( $wgAllPagesAmp ) {
-			$filepath = str_replace(" ", "_", $out->getTitle()->getFullText() . ".html");
+			$filepath = __DIR__ . '/ampfiles/' . str_replace(" ", "_", $out->getTitle()->getFullText() . ".html");
 
 			if ( !file_exists( $filepath ) ) {
 				self::generateAmpHtml();
@@ -29,7 +29,7 @@ class Amp {
 	public static function addAmpLink( $input, array $args, Parser $parser, PPFrame $frame ) {
 		global $wgOut, $wgScriptPath;
 
-		$filepath = str_replace(" ", "_", $wgOut->getTitle()->getFullText() . ".html");
+		$filepath = __DIR__ . '/ampfiles/' . str_replace(" ", "_", $out->getTitle()->getFullText() . ".html");
 		if ( !file_exists( $filepath ) ) {
 			self::generateAmpHtml();
 		}
