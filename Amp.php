@@ -10,6 +10,12 @@ class Amp {
 		global $wgTitle, $wgScriptPath, $wgAllPagesAmp;
 
 		if ( $wgAllPagesAmp ) {
+			$filepath = str_replace(" ", "_", $out->getTitle()->getFullText() . ".html");
+
+			if ( !file_exists( $filepath ) ) {
+				self::generateAmpHtml();
+			}
+
 			$out->addLink(
 				array(
 					"rel" => "amphtml",
@@ -23,6 +29,11 @@ class Amp {
 	public static function addAmpLink( $input, array $args, Parser $parser, PPFrame $frame ) {
 		global $wgOut, $wgScriptPath;
 
+		$filepath = str_replace(" ", "_", $wgOut->getTitle()->getFullText() . ".html");
+		if ( !file_exists( $filepath ) ) {
+			self::generateAmpHtml();
+		}
+
 		$parser->getOutput()->addHeadItem( '<link rel="amphtml" href="' . $wgScriptPath . '/extensions/Amp/ampfiles/' . str_replace(" ", "_", $parser->getTitle()->getFullText()) . '.html">');
 
 		$wgOut->addLink(
@@ -31,13 +42,15 @@ class Amp {
 				"href" => $wgScriptPath . "/extensions/Amp/ampfiles/" . str_replace(" ", "_", $parser->getTitle()->getFullText()) . ".html",
 			)
 		);
+
 		return htmlspecialchars( $input );
 	}
 
-	public static function onAfterFinalPageOutput( $output ) {
-		global $wgAllPagesAmp;
+	public static function onPageContentSaveComplete( $wikiPage, $user, $mainContent, $summaryText, $isMinor, $isWatch, $section, $flags, $revision, $status, $originalRevId, $undidRevId ) {
+		global $wgAllPagesAmp, $wgOut;
+
 		$isAmpPage = false;
-		foreach($output->getLinkTags() as $linkTag) {
+		foreach($wgOut->getLinkTags() as $linkTag) {
 			if ($linkTag['rel'] == "amphtml") {
 				$isAmpPage = true;
 			}
@@ -46,7 +59,6 @@ class Amp {
 			return true;
 		}
 
-		$filepath = str_replace(" ", "_", $output->getTitle()->getFullText() . ".html");
 		self::generateAmpHtml();
 	}
 
